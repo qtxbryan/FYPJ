@@ -1,10 +1,30 @@
 import pymysql
 import list
 
-
-
-
 COLLECTION_LIST = list.COLLECTIONS
+
+def createPermission(name):
+    connection = pymysql.connect(
+        host='localhost',
+        user='root',
+        password='',
+        db='dbplaystore'
+    )
+
+    try:
+        with connection.cursor() as cursor:
+            sql = "INSERT INTO permission (`name`) VALUES(%s"
+            try:
+                cursor.execute(sql, name)
+                print("Permission added successfully")
+            except Exception as e:
+                print(e)
+                print("Opps Something wrong unable to create permission")
+        connection.commit()
+
+    finally:
+        connection.close()
+
 
 def createAppDetails(app_id, description, title, rating, url, collection_id, category_id, dev_id):
     connection = pymysql.connect(
