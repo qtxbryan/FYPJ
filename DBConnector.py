@@ -13,7 +13,7 @@ def createPermission(name):
 
     try:
         with connection.cursor() as cursor:
-            sql = "INSERT INTO permission (`name`) VALUES(%s"
+            sql = "INSERT INTO permission (`name`) VALUES(%s)"
             try:
                 cursor.execute(sql, name)
                 print("Permission added successfully")
