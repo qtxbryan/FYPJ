@@ -3,6 +3,29 @@ import list
 
 COLLECTION_LIST = list.COLLECTIONS
 
+def createMethod(name, class_id, protect_id):
+    connection = pymysql.connect(
+        host='localhost',
+        user='root',
+        password='',
+        db='dbplaystore'
+    )
+
+    try:
+        with connection.cursor() as cursor:
+            sql = "INSERT INTO method (`name`, `class_id`, `protect_id`) VALUES (%s,%s,%s)"
+            try:
+                cursor.execute(sql, (name, class_id, protect_id))
+                print("Method successfully added")
+            except Exception as e:
+                print(e)
+                print("Opps something wrong unable to create method")
+        connection.commit()
+
+    finally:
+        connection.close()
+
+
 def createPermission(name):
     connection = pymysql.connect(
         host='localhost',
@@ -26,7 +49,30 @@ def createPermission(name):
         connection.close()
 
 
-def createAppDetails(app_id, description, title, rating, url, collection_id, category_id, dev_id):
+def updateAppDetails(app_id, description, title, url, category_id, dev_id):
+    connection = pymysql.connect(
+        host='localhost',
+        user='root',
+        password='',
+        db='dbplaystore'
+    )
+
+    try:
+        with connection.cursor() as cursor:
+            sql = "UPDATE app SET `app_id` = %s, `description` = %s, `title` = %s, `url` = %s, `categoryID` = %s, `developerID` =%s WHERE `app_id` = %s)"
+            try:
+                cursor.execute(sql, (app_id, description, title, url, category_id, dev_id, app_id))
+                print("App details updated successfully")
+            except Exception as e:
+                print(e)
+                print("Opps something happened unable to update app details")
+        connection.commit()
+
+    finally:
+        connection.close()
+
+
+def createAppDetails(app_id, description, title, url, category_id, dev_id):
     connection = pymysql.connect(
         host='localhost',
         user='root',
@@ -35,9 +81,9 @@ def createAppDetails(app_id, description, title, rating, url, collection_id, cat
     )
     try:
         with connection.cursor() as cursor:
-            sql = "INSERT INTO app (`app_id`, `description`, `title`, `rating`, `url`,`collectionID`, `categoryID`, `developerID`) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)"
+            sql = "INSERT INTO app (`app_id`, `description`, `title`, `url`, `categoryID`, `developerID`) VALUES(%s,%s,%s,%s,%s,%s)"
             try:
-                cursor.execute(sql, (app_id, description, title, rating, url, collection_id, category_id, dev_id))
+                cursor.execute(sql, (app_id, description, title, url, category_id, dev_id))
                 print("Task added successfully")
             except Exception as e:
                 print(e)
@@ -169,7 +215,7 @@ def readCategory(name):
     )
     try:
         with connection.cursor() as cursor:
-            sql = "SELECT * FROM category WHERE `name` = %s"
+            sql = "SELECT `categoryID` FROM category WHERE `name` = %s"
             try:
                 cursor.execute(sql, (name))
                 result = cursor.fetchall()
@@ -209,3 +255,29 @@ def readAppDetails():
         connection.commit()
     finally:
         connection.close()
+
+
+def readExistedApp(app_id):
+    connection = pymysql.connect(
+        host='localhost',
+        user='root',
+        password='',
+        db='dbplaystore'
+    )
+    try:
+        with connection.cursor() as cursor:
+            sql = "SELECT * FROM app WHERE `app_id` = %s"
+            try:
+                cursor.execute(sql, (app_id))
+                result = cursor.fetchall()
+                print(result)
+                return result
+            except Exception as e:
+                print(e)
+                print("Opps! Something wrong unable to read app details")
+
+        connection.commit()
+    finally:
+        connection.close()
+
+
