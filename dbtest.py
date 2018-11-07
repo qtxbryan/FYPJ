@@ -37,3 +37,11 @@ if args['details']:
 
     catResult = DBConnector.readCategory(category)
     print(catResult)
+
+    exist_app = DBConnector.readExistedApp(app_id)
+    print(exist_app)
+
+    if exist_app:
+        DBConnector.updateAppDetails(app_id, description, title, url, catResult, developer_id)
+    else:
+        DBConnector.createAppDetails(app_id, description, title, url, catResult, developer_id)
