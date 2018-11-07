@@ -134,7 +134,13 @@ class PlayScraper(object):
             apps = [parse_card_info(app_card)
                     for app_card in soup.select('div[data-uitype=500]')]
 
-        return apps
+            applist = []
+            for example in apps:
+                for k,v in example.items():
+                    if k == 'app_id':
+                        applist.append(v)
+
+        return applist
 
     def developer(self, developer, results=None, page=None, detailed=False):
         """Sends a POST request and retrieves a list of the developer's
@@ -167,7 +173,13 @@ class PlayScraper(object):
             apps = [parse_card_info(app)
                     for app in soup.select('div[data-uitype=500]')]
 
-        return apps
+            applist = []
+            for example in apps:
+                for k,v in example.items():
+                    if k == 'app_id':
+                        applist.append(v)
+
+        return applist
 
     def suggestions(self, query):
         """Sends a GET request and retrieves a list of autocomplete suggestions
