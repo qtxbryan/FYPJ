@@ -3,7 +3,7 @@ import list
 
 COLLECTION_LIST = list.COLLECTIONS
 
-def createMethod(name, class_id, protect_id):
+def createMethod(name, perm_id, protect_id):
     connection = pymysql.connect(
         host='localhost',
         user='root',
@@ -13,9 +13,9 @@ def createMethod(name, class_id, protect_id):
 
     try:
         with connection.cursor() as cursor:
-            sql = "INSERT INTO method (`name`, `class_id`, `protect_id`) VALUES (%s,%s,%s)"
+            sql = "INSERT INTO method (`name`, `perm_id`, `protect_id`) VALUES (%s,%s,%s)"
             try:
-                cursor.execute(sql, (name, class_id, protect_id))
+                cursor.execute(sql, (name, perm_id, protect_id))
                 print("Method successfully added")
             except Exception as e:
                 print(e)
