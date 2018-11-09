@@ -3,7 +3,53 @@ import list
 
 COLLECTION_LIST = list.COLLECTIONS
 
+def createExistingPermission(perm_id, app_id):
+    connection = pymysql.connect(
+        host='localhost',
+        user='root',
+        password='',
+        db='dbplaystore'
+    )
+
+    try:
+        with connection.cursor() as cursor:
+            sql = "INSERT INTO perm.exist (`perm_id`, `app_id`) VALUES (%s,%s)"
+            try:
+                cursor.execute(sql, (perm_id, app_id))
+                print("Existing permission successfully added")
+            except Exception as e:
+                print(e)
+                print("Opps something wrong unable to create existing permission")
+
+        connection.commit()
+    finally:
+        connection.close()
+
+def createDeclaredPermission(app_id, perm_id):
+    connection = pymysql.connect(
+        host='localhost',
+        user='root',
+        password='',
+        db='dbplaystore'
+    )
+
+    try:
+        with connection.cursor() as cursor:
+            sql = "INSERT INTO perm.declared(`app_id`, `perm_id`) VALUES (%s,%s)"
+            try:
+                cursor.execute(sql, (app_id, perm_id))
+                print("Declared permissions successfully added")
+            except Exception as e:
+                print(e)
+                print("Opps something wrong unable to create declared permissions")
+
+        connection.commit()
+    finally:
+        connection.close()
+
+
 def createMethod(name, class_id, protect_id):
+
     connection = pymysql.connect(
         host='localhost',
         user='root',
@@ -26,7 +72,7 @@ def createMethod(name, class_id, protect_id):
         connection.close()
 
 
-def createPermission(name):
+def createPermission(name, protect_id):
     connection = pymysql.connect(
         host='localhost',
         user='root',
@@ -36,9 +82,9 @@ def createPermission(name):
 
     try:
         with connection.cursor() as cursor:
-            sql = "INSERT INTO permission (`name`) VALUES(%s)"
+            sql = "INSERT INTO permissions (`name`, `protect_id`) VALUES(%s,%s)"
             try:
-                cursor.execute(sql, name)
+                cursor.execute(sql, (name,protect_id))
                 print("Permission added successfully")
             except Exception as e:
                 print(e)
@@ -49,7 +95,8 @@ def createPermission(name):
         connection.close()
 
 
-def updateAppDetails(app_id, description, title, url, category_id, dev_id):
+def updateAppDetails(app_id, description, title, url, category_id, dev_id, date_scraped):
+
     connection = pymysql.connect(
         host='localhost',
         user='root',
@@ -59,9 +106,9 @@ def updateAppDetails(app_id, description, title, url, category_id, dev_id):
 
     try:
         with connection.cursor() as cursor:
-            sql = "UPDATE app SET `app_id` = %s, `description` = %s, `title` = %s, `url` = %s, `categoryID` = %s, `developerID` =%s WHERE `app_id` = %s)"
+            sql = "UPDATE app SET `app_id` = %s, `description` = %s, `title` = %s, `url` = %s, `categoryID` = %s, `developerID` =%s, `date_scraped` = %s WHERE `app_id` = %s"
             try:
-                cursor.execute(sql, (app_id, description, title, url, category_id, dev_id, app_id))
+                cursor.execute(sql, (app_id, description, title, url, category_id, dev_id, date_scraped, app_id))
                 print("App details updated successfully")
             except Exception as e:
                 print(e)
@@ -72,18 +119,19 @@ def updateAppDetails(app_id, description, title, url, category_id, dev_id):
         connection.close()
 
 
-def createAppDetails(app_id, description, title, url, category_id, dev_id):
+def createAppDetails(app_id, description, title, url, category_id, dev_id, date_scraped):
     connection = pymysql.connect(
         host='localhost',
         user='root',
         password='',
         db='dbplaystore'
     )
+
     try:
         with connection.cursor() as cursor:
-            sql = "INSERT INTO app (`app_id`, `description`, `title`, `url`, `categoryID`, `developerID`) VALUES(%s,%s,%s,%s,%s,%s)"
+            sql = "INSERT INTO app (`app_id`, `description`, `title`, `url`, `categoryID`, `developerID`, `date_scraped`) VALUES(%s,%s,%s,%s,%s,%s,%s)"
             try:
-                cursor.execute(sql, (app_id, description, title, url, category_id, dev_id))
+                cursor.execute(sql, (app_id, description, title, url, category_id, dev_id, date_scraped))
                 print("Task added successfully")
             except Exception as e:
                 print(e)

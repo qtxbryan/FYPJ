@@ -1,7 +1,7 @@
 import DBConnector
 import api
 import argparse
-
+import time
 
 parser = argparse.ArgumentParser(description="Google Play Web Scraper"
                                              "")
@@ -26,6 +26,7 @@ developer = args['developer']
 search = args['search']
 
 if args['details']:
+    date_scraped = time.strftime("%Y-%m-%d %H:%M")
     data = api.details(app_id)
     app_id = data['app_id']
     description = data['description']
@@ -52,14 +53,17 @@ if args['details']:
     print(catResult)
 
     exist_app = DBConnector.readExistedApp(app_id)
-    print(exist_app)
+    print("HI", exist_app)
 
     if exist_app:
-        DBConnector.updateAppDetails(app_id, description, title, url, catResult, developer_id)
+
+        DBConnector.updateAppDetails(app_id, description, title, url, catResult, developer_id, date_scraped)
     else:
-        DBConnector.createAppDetails(app_id, description, title, url, catResult, developer_id)
+        DBConnector.createAppDetails(app_id, description, title, url, catResult, developer_id, date_scraped)
 
 elif args['collections']:
+    date_scraped = time.strftime("%Y-%m-%d %H:%M")
+
     dict_collection = dict()
     dict_collection['collection'] = collections[0]
     dict_collection['category'] = collections[1]
@@ -101,9 +105,9 @@ elif args['collections']:
         print(exist_app)
 
         if exist_app:
-            DBConnector.updateAppDetails(app_id, description, title, url, catResult, developer_id)
+            DBConnector.updateAppDetails(app_id, description, title, url, catResult, developer_id, date_scraped)
         else:
-            DBConnector.createAppDetails(app_id, description, title, url, catResult, developer_id)
+            DBConnector.createAppDetails(app_id, description, title, url, catResult, developer_id, date_scraped)
 
 elif args['developer']:
     dict_developer = dict()
