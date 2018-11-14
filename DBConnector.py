@@ -254,6 +254,50 @@ def readDeveloper(dev_id):
         connection.close()
 
 
+def readPermission():
+    connection = pymysql.connect(
+        host='localhost',
+        user='root',
+        password='',
+        db='dbplaystore'
+    )
+
+    try:
+        with connection.cursor() as cursor:
+            sql = "SELECT permissions.name FROM permissions"
+            sql2 = "SELECT permissions.name, method.name FROM (permissions INNER JOIN method on permissions.perm_id = method.perm_id)"
+            try:
+                cursor.execute(sql)
+                result = cursor.fetchall()
+                for row in result:
+                    name = row[0]
+                    file = open('/home/fypj/Desktop/FYPJ/RawResults/' + name, "w+")
+                    with connection.cursor() as cursor2:
+                        try:
+                            cursor2.execute(sql2)
+                            result2 = cursor2.fetchall()
+                            #print (result2)
+                            for row2 in result2:
+                                row_name = row2[0]
+                                #print (row_name)
+                                if row_name == name:
+                                    method = row2[1]
+                                    #print ("method")
+                                    file.write(method + "\n")
+                        except Exception as e2:
+                            print(e2)
+                            print("Opps something wrong unable to read permission method")
+
+            except Exception as e:
+                print(e)
+                print("Opps something wrong unable to read permission name")
+
+        connection.commit()
+    finally:
+
+        connection.close()
+
+
 def readCategory(name):
     connection = pymysql.connect(
         host='localhost',

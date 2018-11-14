@@ -2,6 +2,7 @@ import DBConnector
 import api
 import argparse
 import time
+import PermissionChecker
 
 parser = argparse.ArgumentParser(description="Google Play Web Scraper"
                                              "")
@@ -18,12 +19,15 @@ parser.add_argument('-s', '--search', nargs='?', help="Search for a particular p
 
 parser.add_argument('-l', '--list', action='store_true',help="List all the category")
 
+parser.add_argument('-p', '--permission', nargs= '?', help = "Get the app permissions")
+
 
 args = vars(parser.parse_args())
 app_id = args['details']
 collections = args['collections']
 developer = args['developer']
 search = args['search']
+permission = args['permission']
 
 if args['details']:
     date_scraped = time.strftime("%Y-%m-%d %H:%M")
@@ -110,6 +114,7 @@ elif args['collections']:
             DBConnector.createAppDetails(app_id, description, title, url, catResult, developer_id, date_scraped)
 
 elif args['developer']:
+    date_scraped = time.strftime("%Y-%m-%d %H:%M")
     dict_developer = dict()
     dict_developer['developer'] = developer[0]
     print("Returned results: ", api.developer(dict_developer['developer']))
@@ -158,4 +163,26 @@ elif args['search']:
     print(api.search(search))
 elif args['list']:
     print(api.categories())
+elif args['permission']:
+    PermissionChecker.getPermissionFromManifest(permission)
+    DBConnector.readPermission()
+    PermissionChecker.CheckSubFolder('./RawResults')
 
+    PermissionChecker.checkPermissionExist('./jd-cli-0.9.2-dist/' + PermissionChecker.AppName + '-dex2jar.src')
+
+    print("")
+    print("Permission Declared in Manifest :")
+    print(PermissionChecker.PermissionDeclared)
+    print("")
+    # print "Permission checked in file and database :"
+    # print (PermissionCheck)
+    # print ""
+    print("Permission that are checked :")
+    print(PermissionChecker.PermissionExist)
+    print("")
+    # print "Permission that are dangerous :"
+    # print (DangerousPermissions)
+    print("")
+    print("Permission that are over declared :")
+    print([item for item in PermissionChecker.PermissionDeclared if item not in PermissionChecker.PermissionExist])
+    print("")
