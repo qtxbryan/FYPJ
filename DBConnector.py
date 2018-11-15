@@ -13,7 +13,7 @@ def createExistingPermission(perm_id, app_id):
 
     try:
         with connection.cursor() as cursor:
-            sql = "INSERT INTO perm.exist (`perm_id`, `app_id`) VALUES (%s,%s)"
+            sql = "INSERT INTO perm_exist (`perm_id`, `app_id`) VALUES (%s,%s)"
             try:
                 cursor.execute(sql, (perm_id, app_id))
                 print("Existing permission successfully added")
@@ -35,7 +35,7 @@ def createDeclaredPermission(app_id, perm_id):
 
     try:
         with connection.cursor() as cursor:
-            sql = "INSERT INTO perm.declared(`app_id`, `perm_id`) VALUES (%s,%s)"
+            sql = "INSERT INTO perm_declared(`app_id`, `perm_id`) VALUES (%s,%s)"
             try:
                 cursor.execute(sql, (app_id, perm_id))
                 print("Declared permissions successfully added")

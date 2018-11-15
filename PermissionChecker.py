@@ -5,6 +5,8 @@ import os.path
 import xlrd
 import difflib
 import json
+import DBConnector
+import pymysql
 from androguard.core.bytecodes.apk import APK
 
 PermissionDeclared = []
@@ -15,18 +17,38 @@ DangerousPermission = []
 DangerousPermissions = []
 PermissionMethod = []
 
-GivenAPK = sys.argv[1]
+GivenAPK = sys.argv[2]
 AppName = os.path.splitext(GivenAPK)[0]
-
+title = GivenAPK[:-4]
 
 def getPermissionFromManifest(Apack):
     SetApk = APK(Apack)
-
     ManifestPermissions = SetApk.get_permissions()
 
     for permission in ManifestPermissions:
         if "android.permission" in permission:
             PermissionDeclared.append(permission)
+            connection = pymysql.connect(host='localhost',user='root',password='',db='dbplaystore')
+
+            try:
+                with connection.cursor() as cursor:
+                    sql = "SELECT `perm_id`, `name` FROM permissions"
+                    try:
+                        cursor.execute(sql)
+                        result = cursor.fetchall()
+                        for row in result:
+                            perm_name = row
+
+                            if permission in perm_name:
+                                permID = row[0]
+
+                                DBConnector.createDeclaredPermission(title, permID)
+                    except Exception as e:
+                        print(e)
+
+                connection.commit()
+            finally:
+                connection.close()
 
 
 def CheckSubFolder(folder):
@@ -45,8 +67,7 @@ def CheckSubFolder(folder):
                 results.append(convertingRawtoMethods(line))
             if results:
                 for item in results:
-                    f = open("wFile", "w")
-                    f.write(item)
+                    wFile.write(item + "\n")
 
 
 
@@ -71,26 +92,42 @@ def grep(pattern,dir):
 def checkPermissionExist(folder):
     if PermissionDeclared:
         for permission in PermissionDeclared:
-            methodExist = []
-            my_file = './ActualResults/apipermission/' + permission
+            my_file = "./ActualResults/apipermission/" + permission
 
             if os.path.isfile(my_file):
-                permissionApiFile = open(my_file, 'r')
-
+                permissionapifile = open(my_file, "r")
                 grepres = []
 
-                for line in permissionApiFile:
+                for line in permissionapifile:
                     line = line[:-2]
+
                     if len(line) <= 7:
                         continue
                     getgrep = grep(line, folder)
-
                     grepres.append(getgrep)
 
                 if grepres:
                     PermissionExist.append(permission)
-    with open('/home/fypj/Desktop/FYPJ/' + AppName, "w") as outfile:
-        json.dump(PermissionExist, outfile)
+
+                    connection = pymysql.connect(host='localhost',user='root',password='',db='dbplaystore')
+
+                    try:
+                        with connection.cursor() as cursor:
+                            sql = "SELECT `name`, `perm_id` FROM permissions"
+
+                            try:
+                                cursor.execute(sql)
+                                result = cursor.fetchall()
+                                for row in result:
+                                    perm_name = row[0]
+                                    if permission in perm_name:
+                                        permID = row[1]
+                                        DBConnector.createExistingPermission(permID, title)
+                            except Exception as e:
+                                print(e)
+                        connection.commit()
+                    finally:
+                        connection.close()
 
 
 
