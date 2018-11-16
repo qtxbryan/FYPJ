@@ -85,8 +85,8 @@ def convertingRawtoMethods(txt):
 
 def grep(pattern,dir):
     r = re.compile(pattern)
-    files = [ o[0]+"/"+f for o in os.walk(dir) for f in o[2] if os.path.isfile(o[0]+"/"+f) ]
-    return [ l for f in files for l in open(f) if r.search(l) ]
+    #files = [ o[0]+"/"+f for o in os.walk(dir) for f in o[2] if os.path.isfile(o[0]+"/"+f) ]
+    #return [ l for f in files for l in open(f) if r.search(l) ]
 
 
 def checkPermissionExist(folder):
