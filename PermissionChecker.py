@@ -17,7 +17,7 @@ DangerousPermission = []
 DangerousPermissions = []
 PermissionMethod = []
 
-GivenAPK = sys.argv[2]
+GivenAPK = sys.argv[1]
 AppName = os.path.splitext(GivenAPK)[0]
 title = GivenAPK[:-4]
 
@@ -49,6 +49,8 @@ def getPermissionFromManifest(Apack):
                 connection.commit()
             finally:
                 connection.close()
+            with open("/home/fypj/Desktop/FYPJ" + AppName + "Declared permissions", "w+") as outfile:
+                json.dump(PermissionDeclared, outfile)
 
 
 def CheckSubFolder(folder):
@@ -85,6 +87,8 @@ def convertingRawtoMethods(txt):
 
 def grep(pattern,dir):
     r = re.compile(pattern)
+    files = [o[0] + "/" + f for o in os.walk(dir) for f in o[2] if os.path.isfile(o[0] + "/" + f)]
+    return [l for f in files for l in open(f) if r.search(l)]
     #files = [ o[0]+"/"+f for o in os.walk(dir) for f in o[2] if os.path.isfile(o[0]+"/"+f) ]
     #return [ l for f in files for l in open(f) if r.search(l) ]
 
@@ -128,6 +132,8 @@ def checkPermissionExist(folder):
                         connection.commit()
                     finally:
                         connection.close()
+                    with open("/home/fypj/Desktop/FYPJ/" + AppName + "Used permissions", "w+") as outfile:
+                        json.dump(PermissionExist, outfile)
 
 
 
@@ -140,3 +146,23 @@ os.system('java -jar jd-cli.jar ../' + AppName + '-dex2jar.jar')
 os.system('unzip' + " " + AppName + "-dex2jar.src.jar" + " " + "-d ./" + AppName + "-dex2jar.src")
 
 os.chdir('../')
+
+getPermissionFromManifest(GivenAPK)
+DBConnector.readPermission()
+CheckSubFolder('./RawResults')
+checkPermissionExist('./jd-cli-0.9.2-dist/' + AppName + '-dex2jar.src')
+
+print("")
+print('Permission Declared in Manifest: ')
+print(PermissionDeclared)
+print("")
+
+print("Permission that are checked: ")
+print(PermissionExist)
+print("")
+
+print("")
+print("Permission that are over declared: ")
+print([item for item in PermissionDeclared if item not in PermissionExist])
+print("")
+
